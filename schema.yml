@@ -1,0 +1,525 @@
+openapi: 3.0.3
+info:
+  title: ZamRate API
+  version: 1.0.0
+  description: Zambian Currency and Exchange Rate API
+paths:
+  /api/v1/convert/:
+    get:
+      operationId: v1_convert_retrieve
+      description: Convert an amount using the latest available international reference
+        exchange rate stored in ZamRate.
+      summary: Convert between currencies
+      parameters:
+      - in: query
+        name: amount
+        schema:
+          type: number
+        description: Amount to convert. Must be greater than zero.
+      - in: query
+        name: from
+        schema:
+          type: string
+        description: Source currency code. Defaults to ZMW.
+      - in: query
+        name: to
+        schema:
+          type: string
+        description: Target currency code. Defaults to USD.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/currencies/:
+    get:
+      operationId: v1_currencies_list
+      description: Return all active currencies supported by ZamRate API.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Currency'
+          description: ''
+  /api/v1/institutions/:
+    get:
+      operationId: v1_institutions_list
+      description: Returns active commercial banks registered in ZamRate.
+      summary: List financial institutions
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FinancialInstitution'
+          description: ''
+  /api/v1/institutions/{code}/rates/:
+    get:
+      operationId: v1_institutions_rates_list
+      description: Returns exchange rates for a selected financial institution. Supports
+        optional category, currency, date and time filters.
+      summary: Get institution exchange rates
+      parameters:
+      - in: query
+        name: base
+        schema:
+          type: string
+        description: Base currency, for example USD.
+      - in: query
+        name: category
+        schema:
+          type: string
+        description: 'Rate category: interbank or retail.'
+      - in: path
+        name: code
+        schema:
+          type: string
+        description: Institution code.
+        required: true
+      - in: query
+        name: date
+        schema:
+          type: string
+          format: date
+        description: Rate date in YYYY-MM-DD format.
+      - in: query
+        name: quote
+        schema:
+          type: string
+        description: Quote currency, for example ZMW.
+      - in: query
+        name: time
+        schema:
+          type: string
+        description: Observation time, for example 09:30.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InstitutionExchangeRate'
+          description: ''
+  /api/v1/rates/boz/:
+    get:
+      operationId: v1_rates_boz_list
+      description: Returns commercial-bank interbank and board rates published by
+        the Bank of Zambia. The retail category represents the source's BOARD RATES.
+      summary: Get Bank of Zambia commercial-bank rates
+      parameters:
+      - in: query
+        name: base
+        schema:
+          type: string
+      - in: query
+        name: category
+        schema:
+          type: string
+      - in: query
+        name: date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: institution
+        schema:
+          type: string
+      - in: query
+        name: quote
+        schema:
+          type: string
+      - in: query
+        name: time
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InstitutionExchangeRate'
+          description: ''
+  /api/v1/rates/boz/historical/:
+    get:
+      operationId: v1_rates_boz_historical_list
+      description: Retrieve historical Bank of Zambia commercial-bank rates. Use date
+        to select a reporting date.
+      summary: Get historical Bank of Zambia rates
+      parameters:
+      - in: query
+        name: base
+        schema:
+          type: string
+      - in: query
+        name: category
+        schema:
+          type: string
+      - in: query
+        name: date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: institution
+        schema:
+          type: string
+      - in: query
+        name: quote
+        schema:
+          type: string
+      - in: query
+        name: time
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InstitutionExchangeRate'
+          description: ''
+  /api/v1/rates/boz/latest/:
+    get:
+      operationId: v1_rates_boz_latest_list
+      description: Returns all available commercial-bank rate observations for the
+        latest published date.
+      summary: Get latest Bank of Zambia rates
+      parameters:
+      - in: query
+        name: base
+        schema:
+          type: string
+      - in: query
+        name: category
+        schema:
+          type: string
+      - in: query
+        name: institution
+        schema:
+          type: string
+      - in: query
+        name: quote
+        schema:
+          type: string
+      - in: query
+        name: time
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InstitutionExchangeRate'
+          description: ''
+  /api/v1/rates/historical/:
+    get:
+      operationId: v1_rates_historical_list
+      description: Retrieve historical international exchange rates using a base currency,
+        optional quote currency and date.
+      summary: Get historical exchange rates
+      parameters:
+      - in: query
+        name: base
+        schema:
+          type: string
+        description: Base currency code. Defaults to ZMW.
+      - in: query
+        name: date
+        schema:
+          type: string
+          format: date
+        description: Date in YYYY-MM-DD format.
+      - in: query
+        name: quote
+        schema:
+          type: string
+        description: Target currency code, for example USD.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExchangeRate'
+          description: ''
+  /api/v1/rates/latest/:
+    get:
+      operationId: v1_rates_latest_list
+      description: Returns the latest available international reference exchange rates
+        for a selected base currency. Defaults to ZMW.
+      summary: Get latest exchange rates
+      parameters:
+      - in: query
+        name: base
+        schema:
+          type: string
+        description: Base currency code, for example ZMW or USD.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExchangeRate'
+          description: ''
+components:
+  schemas:
+    CategoryEnum:
+      enum:
+      - official
+      - interbank
+      - retail
+      - other
+      type: string
+      description: |-
+        * `official` - Official Reference
+        * `interbank` - Interbank
+        * `retail` - Retail
+        * `other` - Other
+    Currency:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          maxLength: 3
+        name:
+          type: string
+          maxLength: 100
+        symbol:
+          type: string
+          maxLength: 10
+        is_active:
+          type: boolean
+      required:
+      - code
+      - id
+      - name
+    ExchangeRate:
+      type: object
+      properties:
+        base_currency:
+          type: string
+          readOnly: true
+        quote_currency:
+          type: string
+          readOnly: true
+        rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,8})?$
+        rate_date:
+          type: string
+          format: date
+        provider:
+          type: string
+          readOnly: true
+      required:
+      - base_currency
+      - provider
+      - quote_currency
+      - rate
+      - rate_date
+    FinancialInstitution:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          maxLength: 30
+        name:
+          type: string
+          maxLength: 150
+        institution_type:
+          $ref: '#/components/schemas/InstitutionTypeEnum'
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        description:
+          type: string
+        is_active:
+          type: boolean
+      required:
+      - code
+      - id
+      - name
+    InstitutionExchangeRate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        institution:
+          type: string
+          readOnly: true
+        institution_code:
+          type: string
+          readOnly: true
+        base_currency:
+          type: string
+          readOnly: true
+        quote_currency:
+          type: string
+          readOnly: true
+        buying_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,8})?$
+          nullable: true
+        selling_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,8})?$
+          nullable: true
+        mid_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,8})?$
+          nullable: true
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        rate_date:
+          type: string
+          format: date
+        observation_time:
+          type: string
+          description: Published observation time, for example 09:30.
+          maxLength: 20
+        observed_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Exact observation timestamp, when available.
+        provider:
+          type: string
+          readOnly: true
+        source_reference:
+          description: Original publication or data source URL.
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+      required:
+      - base_currency
+      - id
+      - institution
+      - institution_code
+      - provider
+      - quote_currency
+      - rate_date
+    InstitutionTypeEnum:
+      enum:
+      - central_bank
+      - commercial_bank
+      - bureau
+      - other
+      type: string
+      description: |-
+        * `central_bank` - Central Bank
+        * `commercial_bank` - Commercial Bank
+        * `bureau` - Bureau de Change
+        * `other` - Other Financial Institution
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
